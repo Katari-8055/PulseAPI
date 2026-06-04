@@ -1,8 +1,8 @@
 import pg from "pg";
-import config from "./index";
-import logger from "./logger";
+import config from "./index.js";
+import logger from "./logger.js";
 
-const {pool} = pg;
+const { Pool } = pg;
 
 class PostgresConnection{
     constructor() {
@@ -11,7 +11,7 @@ class PostgresConnection{
 
     getPool() {
         if(!this.pool) {
-            this.pool = new pool({
+            this.pool = new Pool({
                 host: config.postgres.host,
                 port: config.postgres.port,
                 database: config.postgres.database,
