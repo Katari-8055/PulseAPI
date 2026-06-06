@@ -11,7 +11,7 @@ import ResponseFormatter from './shared/utils/responseFormatter.js';
 import cookieParser from "cookie-parser"
 
 // Routers
-
+import authRouter from './services/auth/routes/authRouter.js';
 /**
  * Initialize Express app
  */
@@ -82,7 +82,7 @@ app.get("/", (req, res) => {
 /**
  * API Routes
  */
-
+app.use("/api/auth", authRouter);
 
 /**
  * 404 Handler
