@@ -49,6 +49,12 @@ const config = {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         expiresIn: 24 * 60 * 60 * 1000
+    },
+
+    cookies: {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        expiresIn: 24 * 60 * 60 * 1000
     }
 }
 
