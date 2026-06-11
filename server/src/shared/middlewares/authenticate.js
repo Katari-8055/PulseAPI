@@ -18,9 +18,9 @@ const authenticate = async (req, res, next) => {
 
         const decoded = jwt.verify(token, config.jwt.secret);
 
-        const { userid, email, username, role, clientId} = decoded;
+        const { userId, email, username, role, clientId } = decoded;
 
-        req.user = { userid, email, username, role, clientId};
+        req.user = { userId, email, username, role, clientId };
         next();
     } catch (error) {
         logger.error("Authentication Failed", {
