@@ -2,6 +2,8 @@ import AppError from "../../../shared/utils/AppError.js"
 import config from "../../../shared/config/index.js"
 import jwt from "jsonwebtoken"
 import logger from "../../../shared/config/logger.js"
+import bcrypt from "bcryptjs"
+import { APPLICATION_ROLES } from "../../../shared/constant/role.js"
 
 export class AuthService {
     constructor(userRepository) {
@@ -60,9 +62,9 @@ export class AuthService {
      */
     async onboardSuperAdmin(superAdminData) {
         try {
-            const existingUser = await this.userRepository.findAll();
+            const existingSuperAdmin = await this.userRepository.findByRole(APPLICATION_ROLES.SUPER_ADMIN);
 
-            if (existingUser && existingUser.length > 0) {
+            if (existingSuperAdmin && existingSuperAdmin.length > 0) {
                 throw new AppError("Super admin onboarding is disabled", 403);
             }
 

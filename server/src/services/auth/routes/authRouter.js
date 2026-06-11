@@ -14,7 +14,7 @@ const authController = controllers.authController
 router.post("/onboard-super-admin",
     requestLogger,
     validate(onboardSuperAdminSchema),
-    (req, res, next) => authController.onBoardSuperAdmin(req, res, next)
+    (req, res, next) => authController.onboardSuperAdmin(req, res, next)
 )
 
 router.post("/register",
