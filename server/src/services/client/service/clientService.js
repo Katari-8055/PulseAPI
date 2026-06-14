@@ -243,6 +243,12 @@ export class ClientService {
      */
     async getClientApiKeys(clientId, user) {
         try {
+            const client = await this.clientRepository.findById(clientId);
+
+            if (!client) {
+                throw new AppError("Client not found", 404)
+            };
+
             if (!this.canUserAccessClient(user, clientId)) {
                 throw new AppError('Access denied to this client', 403);
             };
