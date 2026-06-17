@@ -62,9 +62,9 @@ export class AuthService {
      */
     async onboardSuperAdmin(superAdminData) {
         try {
-            const existingSuperAdmin = await this.userRepository.findByRole(APPLICATION_ROLES.SUPER_ADMIN);
+            const existingUser = await this.userRepository.findAll();
 
-            if (existingSuperAdmin && existingSuperAdmin.length > 0) {
+            if (existingUser && existingUser.length > 0) {
                 throw new AppError("Super admin onboarding is disabled", 403);
             }
 
