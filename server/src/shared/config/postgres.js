@@ -4,13 +4,13 @@ import logger from "./logger.js";
 
 const { Pool } = pg;
 
-class PostgresConnection{
+class PostgresConnection {
     constructor() {
         this.pool = null;
     }
 
     getPool() {
-        if(!this.pool) {
+        if (!this.pool) {
             this.pool = new Pool({
                 host: config.postgres.host,
                 port: config.postgres.port,
@@ -25,19 +25,19 @@ class PostgresConnection{
                 logger.error("Unexpected error on idle client:", err);
             })
             logger.info(`PostgreSQL pool created for ${config.postgres.host}:${config.postgres.port}/${config.postgres.database}`);
-            return this.pool;
         }
+        return this.pool;
     }
 
     async testConnection() {
-        try{
+        try {
             const pool = this.getPool();
             const client = await pool.connect();
             const result = await client.query("SELECT NOW()");
             client.release();
 
             logger.info("PostgreSQL connection test successful:", result.rows[0].now);
-        }catch(err){
+        } catch (err) {
             logger.error("Error testing PostgreSQL connection:", err);
             throw err;
         }
@@ -51,14 +51,14 @@ class PostgresConnection{
             const duration = Date.now() - start;
             logger.info(`Query executed in ${duration} ms: ${text}`, params);
             return result;
-        }catch(error) {
-            logger.error("Error executing query:", {text, error: error.message});
+        } catch (error) {
+            logger.error("Error executing query:", { text, error: error.message });
             throw error;
         }
     }
 
     async close() {
-        if(this.pool) {
+        if (this.pool) {
             await this.pool.end();
             this.pool = null;
             logger.info("PostgreSQL pool closed");
