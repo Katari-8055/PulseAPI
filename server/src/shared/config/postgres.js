@@ -49,10 +49,13 @@ class PostgresConnection {
         try {
             const result = await pool.query(text, params);
             const duration = Date.now() - start;
-            logger.info(`Query executed in ${duration} ms: ${text}`, params);
+            const queryString = typeof text === 'object' && text !== null ? text.text : text;
+            const queryParams = typeof text === 'object' && text !== null ? text.values : params;
+            logger.info(`Query executed in ${duration} ms: ${queryString}`, { params: queryParams });
             return result;
         } catch (error) {
-            logger.error("Error executing query:", { text, error: error.message });
+            const queryString = typeof text === 'object' && text !== null ? text.text : text;
+            logger.error("Error executing query:", { text: queryString, error: error.message });
             throw error;
         }
     }
