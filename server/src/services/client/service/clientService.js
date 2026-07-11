@@ -4,6 +4,9 @@ import { APPLICATION_ROLES, isValidClientRole } from "../../../shared/constant/r
 import AppError from "../../../shared/utils/AppError.js";
 import { v4 as uudiv4 } from "uuid";
 import crypto from 'crypto';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import config from '../../../shared/config/index.js';
 
 /**
  * ClientService class to handle business logic related to clients
@@ -51,6 +54,11 @@ export class ClientService {
         return userObj;
     };
 
+    async comparePassword(userEnteredPassword, hashedPassword) {
+        return await bcrypt.compare(userEnteredPassword, hashedPassword)
+    }
+
+
     /**
      * Generate unique slug from name
      * @param {String} name - The name to generate the slug from
@@ -70,9 +78,15 @@ export class ClientService {
      * @param {Object} adminUser - The admin user creating the client
      * @returns {Object} - The created client
      */
-    async createClient(clientData, adminUser) {
+    async createClient(clientData) {
         try {
-            const { name, email, description, website } = clientData;
+            const { name, email, description, website, password } = clientData;
+
+            const findbymail = await this.clientRepository.findByEmail(email);
+
+            if (findbymail) {
+                throw new AppError(`Client with email ${email} already exists`, 400);
+            }
 
             const slug = this.generateSlug(name);
 
@@ -88,15 +102,65 @@ export class ClientService {
                 email,
                 description,
                 website,
-                createdBy: adminUser.userId
+                password,
             });
 
-            return client;
+            const token = this.generateToken(client);
+            const formattedClient = this.formatClientForResponse(client);
+
+            return { client: formattedClient, token };
         } catch (error) {
             logger.error('Error creating client:', error);
             throw error;
         }
     };
+
+
+    async loginClient(clientData) {
+        try {
+            const { email, password } = clientData;
+
+            const client = await this.clientRepository.findByEmail(email);
+
+            if (!client) {
+                throw new AppError("Client not found", 404)
+            }
+
+            const isPasswordValid = await this.comparePassword(password, client.password);
+
+            if (!isPasswordValid) {
+                throw new AppError("Invalid password", 401)
+            }
+
+            const token = this.generateToken(client);
+
+            const formattedClient = this.formatClientForResponse(client);
+
+            return { client: formattedClient, token };
+
+
+        } catch (error) {
+            logger.error('Error logging in client:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Generate JWT for client login
+     * @param {Object} client - The client object
+     * @returns {String} - The generated JWT
+     */
+    generateToken(client) {
+        const payload = {
+            clientId: client._id,
+            role: 'client_admin',
+            type: 'client'
+        };
+
+        return jwt.sign(payload, config.jwt.secret, {
+            expiresIn: config.jwt.expiresIn
+        });
+    }
 
     /**
      * Check if a user has access to a specific client

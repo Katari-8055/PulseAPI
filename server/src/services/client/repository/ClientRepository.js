@@ -19,6 +19,7 @@ class MongoClientRepository extends BaseClientRepository {
     async create(clientData) {
         try {
             const client = new this.model(clientData);
+
             await client.save();
 
             logger.info('Client created in MongoDB', {
@@ -100,6 +101,16 @@ class MongoClientRepository extends BaseClientRepository {
             return count;
         } catch (error) {
             logger.error('Error counting clients:', error);
+            throw error;
+        }
+    }
+
+    async findByEmail(email) {
+        try {
+            const client = await this.model.findOne({ email });
+            return client;
+        } catch (error) {
+            logger.error('Error finding client by email:', error);
             throw error;
         }
     }

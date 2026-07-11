@@ -8,19 +8,22 @@ const router = express.Router();
 // Destructure the clientController from the dependencies
 const { clientController } = clientDependencies.controller
 
-// Apply authentication middleware to all routes in this router
-router.use(authenticate);
 
 // Onboard a new client
-router.post("/admin/clients/onboard", (req, res, next) => clientController.createClient(req, res, next))
+router.post("/clients/onboard", (req, res, next) => clientController.createClient(req, res, next))
+
+
+//Login Client
+router.post("/clients/login", (req, res, next) => clientController.loginClient(req, res, next))
+
 
 // Create a user for a client
-router.post("/admin/clients/:clientId/users", (req, res, next) => clientController.createClientUser(req, res, next))
+router.post("/clients/:clientId/users", (req, res, next) => clientController.createClientUser(req, res, next))
 
 // Create API key for a client
-router.post("/admin/clients/:clientId/api/keys", (req, res, next) => clientController.createApiKey(req, res, next))
+router.post("/clients/:clientId/api/keys", (req, res, next) => clientController.createApiKey(req, res, next))
 
 // Get all API keys for a client
-router.get("/admin/clients/:clientId/api/keys", (req, res, next) => clientController.getClientApiKeys(req, res, next))
+router.get("/clients/:clientId/api/keys", (req, res, next) => clientController.getClientApiKeys(req, res, next))
 
 export default router;
