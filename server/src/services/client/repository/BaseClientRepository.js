@@ -28,6 +28,10 @@ export default class BaseClientRepository {
         throw new Error('Method not implemented');
     }
 
+    async findByEmail(email) {
+        throw new Error('Method not implemented');
+    }
+
     async count(filters) {
         throw new Error('Method not implemented');
     }

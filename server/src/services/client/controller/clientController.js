@@ -1,4 +1,5 @@
-import ResponseFormatter from "../../../shared/utils/responseFormatter.js"
+import ResponseFormatter from "../../../shared/utils/responseFormatter.js";
+import config from "../../../shared/config/index.js";
 
 /**
  * ClientController class to handle client related requests
@@ -34,14 +35,31 @@ export class ClientController {
      */
     async createClient(req, res, next) {
         try {
-            const isSuperAdmin = await this.authService.checkSuperAdminPermissions(req.user.userId);
-            if (!isSuperAdmin) {
-                return res.status(403).json(ResponseFormatter.error("Access denied", 403))
-            };
+            const { client, token } = await this.clientService.createClient(req.body);
 
-            const client = await this.clientService.createClient(req.body, req.user);
+            res.cookie("authToken", token, {
+                httpOnly: config.cookie.httpOnly,
+                secure: config.cookie.secure,
+                maxAge: config.cookie.expiresIn
+            });
 
             return res.status(201).json(ResponseFormatter.success(client, "Client created successfully", 201))
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    async loginClient(req, res, next) {
+        try {
+            const { client, token } = await this.clientService.loginClient(req.body);
+
+            res.cookie("authToken", token, {
+                httpOnly: config.cookie.httpOnly,
+                secure: config.cookie.secure,
+                maxAge: config.cookie.expiresIn
+            });
+
+            return res.status(200).json(ResponseFormatter.success(client, "Client logged in successfully", 200))
         } catch (error) {
             next(error)
         }
