@@ -98,6 +98,24 @@ class MongoUserRepository extends BaseRepository {
             throw error;
         }
     }
+
+    /**
+     * Finds all users belonging to a specific client.
+     * @param {string} clientId - The ID of the client.
+     * @returns {Promise<Array>} - Returns an array of user objects for that client.
+     */
+    async findByClientId(clientId) {
+        try {
+            const users = await this.model
+                .find({ clientId, isActive: true })
+                .select('-password')
+                .sort({ createdAt: -1 });
+            return users;
+        } catch (error) {
+            logger.error("Error finding users by clientId", error);
+            throw error;
+        }
+    }
 }
 
 export default new MongoUserRepository()

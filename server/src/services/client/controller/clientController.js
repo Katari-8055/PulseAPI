@@ -116,4 +116,65 @@ export class ClientController {
             next(error)
         }
     }
+
+    async getAllClients(req, res, next) {
+        try {
+            const clients = await this.clientService.getAllClients(req.user)
+            return res.status(200).json(ResponseFormatter.success(clients, "Clients fetched successfully", 200))
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    async getClientById(req, res, next) {
+        try {
+            const { clientId } = req.params
+            const client = await this.clientService.getClientById(clientId, req.user)
+            return res.status(200).json(ResponseFormatter.success(client, "Client fetched successfully", 200))
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    /**
+     * Get all users (admin/viewer) for a specific client org
+     */
+    async getClientUsers(req, res, next) {
+        try {
+            const { clientId } = req.params;
+            const users = await this.clientService.getClientUsers(clientId, req.user);
+            return res.status(200).json(ResponseFormatter.success(users, "Client users fetched successfully", 200));
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    /**
+     * Get logged-in client's own users via /me route
+     * clientId is taken from the cookie token — no URL param needed
+     */
+    async getMyUsers(req, res, next) {
+        try {
+            const clientId = req.user.clientId;
+            const users = await this.clientService.getClientUsers(clientId, req.user);
+            return res.status(200).json(ResponseFormatter.success(users, "Users fetched successfully", 200));
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    /**
+     * Get logged-in client's own API keys via /me route
+     * clientId is taken from the cookie token — no URL param needed
+     */
+    async getMyApiKeys(req, res, next) {
+        try {
+            const clientId = req.user.clientId;
+            const apiKeys = await this.clientService.getClientApiKeys(clientId, req.user);
+            return res.status(200).json(ResponseFormatter.success(apiKeys, "API keys fetched successfully", 200));
+        } catch (error) {
+            next(error);
+        }
+    }
+
 }
