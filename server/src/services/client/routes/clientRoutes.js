@@ -10,7 +10,7 @@ const { clientController } = clientDependencies.controller
 
 
 // Onboard a new client
-router.post("/clients/onboard", (req, res, next) => clientController.createClient(req, res, next))
+router.post("/clients/register", (req, res, next) => clientController.createClient(req, res, next))
 
 
 //Login Client
