@@ -8,7 +8,7 @@ const authenticate = async (req, res, next) => {
     try {
         let token = null;
 
-        if(req.cookies && req.cookies.authToken){
+        if (req.cookies && req.cookies.authToken) {
             token = req.cookies.authToken;
         }
 

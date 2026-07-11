@@ -48,10 +48,11 @@ export class ClientService {
      * @param {Object} user - The client user object
      * @returns {Object} - The formatted client user object
      */
-    formatClientForResponse(user) {
-        const userObj = user.toObject ? user.toObject() : { ...user };
-        delete userObj.password;
-        return userObj;
+    formatClientForResponse(client) {
+        const clientObj = client.toObject ? client.toObject() : { ...client };
+        delete clientObj.password;
+        clientObj.clientId = clientObj._id;
+        return clientObj;
     };
 
     async comparePassword(userEnteredPassword, hashedPassword) {
@@ -152,7 +153,10 @@ export class ClientService {
      */
     generateToken(client) {
         const payload = {
+            userId: client._id,     // maps to req.user.userId for createdBy tracking
             clientId: client._id,
+            email: client.email,   // ✅ ab req.user.email available hoga
+            username: client.name,    // ✅ client ka name username ki jagah
             role: 'client_admin',
             type: 'client'
         };
@@ -189,7 +193,9 @@ export class ClientService {
                 throw new AppError("Access denied", 403)
             };
 
-            const { username, email, password, role = APPLICATION_ROLES.CLIENT_VIEWER } = userData;
+            let { username, email, password, role = APPLICATION_ROLES.CLIENT_VIEWER } = userData;
+
+            if (role) role = role.toLowerCase();
 
             if (!isValidClientRole(role)) {
                 throw new AppError("Invalid role for client user", 400)
@@ -354,6 +360,67 @@ export class ClientService {
             };
         } catch (error) {
             logger.error('Error finding client by API key:', error);
+            throw error;
+        }
+    }
+
+    async getAllClients(user) {
+        try {
+            if (user.role !== APPLICATION_ROLES.SUPER_ADMIN) {
+                throw new AppError('Access denied', 403);
+            };
+            const clients = await this.clientRepository.find({})
+            return clients
+        } catch (error) {
+            logger.error('Error getting all clients:', error);
+            throw error;
+        }
+    }
+
+    async getClientById(clientId, user) {
+        try {
+            if (!this.canUserAccessClient(user, clientId)) {
+                throw new AppError('Access denied', 403);
+            };
+            const client = await this.clientRepository.findById(clientId);
+            if (!client) {
+                throw new AppError('Client not found', 404);
+            };
+            return client;
+        } catch (error) {
+            logger.error('Error getting client by ID:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Get all users (client_admin and client_viewer) belonging to a specific client
+     * @param {String} clientId - The client ID
+     * @param {Object} user - The requesting user (from req.user)
+     * @returns {Array} - List of users for that client
+     */
+    async getClientUsers(clientId, user) {
+        try {
+            // Only the client itself or a super admin can view the users
+            if (!this.canUserAccessClient(user, clientId)) {
+                throw new AppError('Access denied', 403);
+            };
+
+            const client = await this.clientRepository.findById(clientId);
+            if (!client) {
+                throw new AppError('Client not found', 404);
+            };
+
+            const users = await this.userRepository.findByClientId(clientId);
+
+            // Strip passwords from all user objects
+            return users.map(u => {
+                const userObj = u.toObject ? u.toObject() : { ...u };
+                delete userObj.password;
+                return userObj;
+            });
+        } catch (error) {
+            logger.error('Error getting client users:', error);
             throw error;
         }
     }
