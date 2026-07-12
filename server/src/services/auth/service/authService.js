@@ -43,6 +43,31 @@ export class AuthService {
     formatUserForResponse(user) {
         const userObj = user.toObject ? user.toObject() : { ...user };
         delete userObj.password;
+
+        // Ensure permissions object exists
+        userObj.permissions = userObj.permissions || {};
+
+        // Inject fallback permissions based on role if missing specific keys
+        if (userObj.permissions.canViewAnalytics === undefined) {
+            if (userObj.role === 'super_admin' || userObj.role === 'client_admin') {
+                userObj.permissions = {
+                    ...userObj.permissions,
+                    canCreateApiKeys: true,
+                    canManageUsers: true,
+                    canViewAnalytics: true,
+                    canExportData: true
+                };
+            } else {
+                userObj.permissions = {
+                    ...userObj.permissions,
+                    canCreateApiKeys: false,
+                    canManageUsers: false,
+                    canViewAnalytics: true,
+                    canExportData: false
+                };
+            }
+        }
+
         return userObj;
     };
 
@@ -180,7 +205,13 @@ export class AuthService {
                     username: client.name,
                     slug: client.slug,
                     website: client.website,
-                    description: client.description
+                    description: client.description,
+                    permissions: {
+                        canCreateApiKeys: true,
+                        canManageUsers: true,
+                        canViewAnalytics: true,
+                        canExportData: true
+                    }
                 };
             }
             return this.formatUserForResponse(user)

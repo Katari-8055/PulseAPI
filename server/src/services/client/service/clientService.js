@@ -372,7 +372,15 @@ export class ClientService {
                 throw new AppError('Access denied', 403);
             };
             const clients = await this.clientRepository.find({})
-            return clients
+
+            const clientsWithKeysCount = await Promise.all(clients.map(async (client) => {
+                const keys = await this.apiKeyRepository.findByClientId(client._id);
+                const clientObj = client.toObject ? client.toObject() : { ...client };
+                clientObj.keysCount = keys ? keys.length : 0;
+                return clientObj;
+            }));
+
+            return clientsWithKeysCount;
         } catch (error) {
             logger.error('Error getting all clients:', error);
             throw error;

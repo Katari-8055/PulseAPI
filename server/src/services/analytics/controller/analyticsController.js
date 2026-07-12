@@ -66,6 +66,8 @@ export class AnalyticsController {
         if (isSuperAdmin) return true;
 
         const profile = await this.authService.getProfile(req.user.userId);
+        
+        logger.error('DEBUG PROFILE:', { profile, userId: req.user.userId, reqUser: req.user });
 
         if (!profile || !profile.permissions || !profile.permissions.canViewAnalytics) {
             throw new AppError('Insufficient permissions to view analytics', 403);
