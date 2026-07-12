@@ -1,8 +1,187 @@
-import { useQuery } from '@tanstack/react-query';
+import { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { clientApi } from '../api/api';
 import { useAuth } from '../contexts/AuthContext';
-import { Users, UserPlus, Loader2, ShieldCheck, Eye } from 'lucide-react';
+import { Users, UserPlus, Loader2, ShieldCheck, Eye, X, Mail, Lock, User, ChevronDown } from 'lucide-react';
 import { cn } from '../lib/utils';
+
+// ─── Invite User Modal ────────────────────────────────────────────────────────
+function InviteUserModal({ clientId, onClose }) {
+    const queryClient = useQueryClient();
+    const [form, setForm] = useState({ username: '', email: '', password: '', role: 'CLIENT_VIEWER' });
+    const [error, setError] = useState('');
+
+    const set = (field) => (e) => setForm((f) => ({ ...f, [field]: e.target.value }));
+
+    const mutation = useMutation({
+        mutationFn: (data) => clientApi.createClientUser(clientId, data),
+        onSuccess: (res) => {
+            if (res?.success === false) {
+                setError(res.message || 'Failed to invite user');
+                return;
+            }
+            queryClient.invalidateQueries({ queryKey: ['users'] });
+            onClose();
+        },
+        onError: (err) => {
+            setError(err.response?.data?.message || 'Failed to connect to server');
+        },
+    });
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        setError('');
+        mutation.mutate(form);
+    };
+
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            {/* Backdrop */}
+            <div
+                className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm"
+                onClick={onClose}
+            />
+
+            {/* Modal */}
+            <div className="relative w-full max-w-md rounded-2xl bg-slate-900 border border-slate-700/60 shadow-2xl shadow-black/60 p-6">
+                {/* Header */}
+                <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-xl bg-indigo-600/15 flex items-center justify-center ring-1 ring-indigo-500/25">
+                            <UserPlus className="w-4 h-4 text-indigo-400" />
+                        </div>
+                        <div>
+                            <h2 className="text-base font-semibold text-slate-100">Invite User</h2>
+                            <p className="text-xs text-slate-500">Add a new member to your organization</p>
+                        </div>
+                    </div>
+                    <button
+                        onClick={onClose}
+                        className="w-7 h-7 flex items-center justify-center rounded-lg text-slate-500 hover:text-slate-300 hover:bg-slate-800 transition-colors"
+                    >
+                        <X className="w-4 h-4" />
+                    </button>
+                </div>
+
+                {error && (
+                    <div className="mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+                        {error}
+                    </div>
+                )}
+
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    {/* Username */}
+                    <div className="space-y-1.5">
+                        <label htmlFor="inv-username" className="text-xs font-medium text-slate-400 uppercase tracking-wider">
+                            Username
+                        </label>
+                        <div className="relative">
+                            <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
+                            <input
+                                id="inv-username"
+                                type="text"
+                                value={form.username}
+                                onChange={set('username')}
+                                required
+                                disabled={mutation.isPending}
+                                placeholder="e.g. Katari_6"
+                                className="w-full pl-10 pr-4 py-2.5 bg-slate-950/60 border border-slate-700/60 rounded-lg text-sm text-slate-100 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500/60 transition-all disabled:opacity-50"
+                            />
+                        </div>
+                    </div>
+
+                    {/* Email */}
+                    <div className="space-y-1.5">
+                        <label htmlFor="inv-email" className="text-xs font-medium text-slate-400 uppercase tracking-wider">
+                            Email
+                        </label>
+                        <div className="relative">
+                            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
+                            <input
+                                id="inv-email"
+                                type="email"
+                                value={form.email}
+                                onChange={set('email')}
+                                required
+                                disabled={mutation.isPending}
+                                placeholder="e.g. katari6@gmail.com"
+                                className="w-full pl-10 pr-4 py-2.5 bg-slate-950/60 border border-slate-700/60 rounded-lg text-sm text-slate-100 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500/60 transition-all disabled:opacity-50"
+                            />
+                        </div>
+                    </div>
+
+                    {/* Password */}
+                    <div className="space-y-1.5">
+                        <label htmlFor="inv-password" className="text-xs font-medium text-slate-400 uppercase tracking-wider">
+                            Password
+                        </label>
+                        <div className="relative">
+                            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
+                            <input
+                                id="inv-password"
+                                type="password"
+                                value={form.password}
+                                onChange={set('password')}
+                                required
+                                disabled={mutation.isPending}
+                                placeholder="Minimum 6 characters"
+                                className="w-full pl-10 pr-4 py-2.5 bg-slate-950/60 border border-slate-700/60 rounded-lg text-sm text-slate-100 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500/60 transition-all disabled:opacity-50"
+                            />
+                        </div>
+                    </div>
+
+                    {/* Role */}
+                    <div className="space-y-1.5">
+                        <label htmlFor="inv-role" className="text-xs font-medium text-slate-400 uppercase tracking-wider">
+                            Role
+                        </label>
+                        <div className="relative">
+                            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
+                            <select
+                                id="inv-role"
+                                value={form.role}
+                                onChange={set('role')}
+                                disabled={mutation.isPending}
+                                className="w-full appearance-none px-4 py-2.5 bg-slate-950/60 border border-slate-700/60 rounded-lg text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500/60 transition-all disabled:opacity-50 cursor-pointer"
+                            >
+                                <option value="CLIENT_ADMIN">Client Admin</option>
+                                <option value="CLIENT_VIEWER">Client Viewer</option>
+                            </select>
+                        </div>
+                        <p className="text-xs text-slate-600">
+                            {form.role === 'CLIENT_ADMIN'
+                                ? 'Full access: manage users, API keys, and settings.'
+                                : 'Read-only access to analytics and monitoring.'}
+                        </p>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex gap-3 pt-2">
+                        <button
+                            type="button"
+                            onClick={onClose}
+                            disabled={mutation.isPending}
+                            className="flex-1 py-2.5 rounded-lg text-sm font-medium text-slate-400 bg-slate-800 hover:bg-slate-700 transition-colors disabled:opacity-50"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            type="submit"
+                            disabled={mutation.isPending}
+                            className="flex-1 py-2.5 rounded-lg text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                        >
+                            {mutation.isPending ? (
+                                <><Loader2 className="w-4 h-4 animate-spin" /> Inviting…</>
+                            ) : (
+                                <><UserPlus className="w-4 h-4" /> Invite User</>
+                            )}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    );
+}
 
 const ROLE_CONFIG = {
     client_admin: { label: 'Admin', color: 'bg-indigo-500/10 text-indigo-400 ring-indigo-500/20' },
@@ -68,6 +247,7 @@ function EmptyState() {
 export function UsersPage() {
     const { user } = useAuth();
     const isAdmin = user?.role === 'client_admin' || user?.role === 'super_admin';
+    const [inviteOpen, setInviteOpen] = useState(false);
 
     const { data, isPending, error } = useQuery({
         queryKey: ['users', user?.clientId],
@@ -88,10 +268,20 @@ export function UsersPage() {
                     <p className="text-sm text-slate-500 mt-1">Manage users in your organization</p>
                 </div>
                 {isAdmin && (
-                    <button className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition-colors">
+                    <button
+                        onClick={() => setInviteOpen(true)}
+                        className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition-colors"
+                    >
                         <UserPlus className="w-4 h-4" />
                         Invite User
                     </button>
+                )}
+
+                {inviteOpen && (
+                    <InviteUserModal
+                        clientId={user?.clientId}
+                        onClose={() => setInviteOpen(false)}
+                    />
                 )}
             </div>
 
