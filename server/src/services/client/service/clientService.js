@@ -326,9 +326,11 @@ export class ClientService {
             const apiKeys = await this.apiKeyRepository.findByClientId(clientId);
 
             const formattedResponse = apiKeys.map(key => {
-                const keyObj = key.toObject ? key.toObject() : key;
+                const keyObj = key.toObject ? key.toObject() : { ...key };
+                // Expose keyValue as 'key' for the frontend — do NOT delete it
+                keyObj.key = keyObj.keyValue;
                 delete keyObj.keyValue;
-                return keyObj
+                return keyObj;
             })
 
             return formattedResponse

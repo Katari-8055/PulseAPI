@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken"
 import logger from "../../../shared/config/logger.js"
 import bcrypt from "bcryptjs"
 import { APPLICATION_ROLES } from "../../../shared/constant/role.js"
+import clientRepository from "../../client/repository/ClientRepository.js";
 
 export class AuthService {
     constructor(userRepository) {
@@ -166,7 +167,21 @@ export class AuthService {
         try {
             const user = await this.userRepository.findById(userId);
             if (!user) {
-                throw new AppError('User not found', 404);
+                const client = await clientRepository.findById(userId);
+                if (!client) {
+                    throw new AppError('User not found', 404);
+                }
+                return {
+                    _id: client._id,
+                    name: client.name,
+                    email: client.email,
+                    role: 'client_admin',
+                    clientId: client._id,
+                    username: client.name,
+                    slug: client.slug,
+                    website: client.website,
+                    description: client.description
+                };
             }
             return this.formatUserForResponse(user)
         } catch (error) {
