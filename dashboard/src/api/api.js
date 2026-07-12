@@ -22,6 +22,8 @@ api.interceptors.response.use(
 
 export const authApi = {
     login: async (credentials) => {
+        // Since we have separate logins for client vs admin, we have two login methods:
+        // authApi.login (for internal users/super admin) and clientApi.clientLogin (for clients)
         const response = await api.post('/auth/login', credentials);
         return response.data;
     },
@@ -34,35 +36,25 @@ export const authApi = {
         return response.data;
     },
     logout: async () => {
-        const response = await api.post('/auth/logout');
+        const response = await api.get('/auth/logout');
         return response.data;
     },
-    updateProfile: async (profileData) => {
-        const response = await api.put('/auth/profile', profileData);
+    onboardSuperAdmin: async (adminData) => {
+        const response = await api.post('/auth/onboard-super-admin', adminData);
         return response.data;
-    },
+    }
 };
 
 export const analyticsApi = {
-    getDashboard: async () => {
-        const response = await api.get('/analytics/dashboard');
+    getDashboard: async (params) => {
+        const response = await api.get('/analytics/dashboard', { params });
         const payload = response.data || {};
-
         payload.data = payload.data || {};
-
         payload.data.stats = payload.data.stats ?? {
-            totalHits: 0,
-            avgLatency: 0,
-            errorRate: 0,
-            errorHits: 0,
-            successHits: 0,
-            uniqueServices: 0,
-            uniqueEndpoints: 0,
+            totalHits: 0, avgLatency: 0, errorRate: 0, errorHits: 0, successHits: 0, uniqueServices: 0, uniqueEndpoints: 0,
         };
-
         payload.data.topEndpoints = payload.data.topEndpoints ?? [];
         payload.data.recentActivity = payload.data.recentActitivy ?? payload.data.recentActivity ?? [];
-
         return payload;
     },
     getStats: async (params) => {
@@ -80,29 +72,53 @@ export const analyticsApi = {
 };
 
 export const clientApi = {
-    getCurrentClient: async () => {
-        const response = await api.get('/clients/current');
+    // Client specific self-routes
+    clientLogin: async (credentials) => {
+        const response = await api.post('/clients/login', credentials);
         return response.data;
     },
-    getClientDashboard: async (clientId) => {
-        const params = clientId ? { clientId } : {};
-        const response = await api.get('/clients/dashboard', { params });
+    clientRegister: async (clientData) => {
+        const response = await api.post('/clients/register', clientData);
         return response.data;
     },
+    getMyUsers: async () => {
+        const response = await api.get('/clients/me/users');
+        return response.data;
+    },
+    getMyApiKeys: async () => {
+        const response = await api.get('/clients/me/api/keys');
+        return response.data;
+    },
+    
+    // Super Admin & Specific Client Org routes
     createClient: async (clientData) => {
-        const response = await api.post('/admin/clients', clientData);
+        // Technically backend doesn't have POST /admin/clients anymore.
+        // It has POST /clients/register for self-registration. Let's use that for creating clients.
+        const response = await api.post('/clients/register', clientData);
         return response.data;
     },
     getClients: async (params) => {
         const response = await api.get('/admin/clients', { params });
         return response.data;
     },
+    getClientById: async (clientId) => {
+        const response = await api.get(`/admin/clients/${clientId}`);
+        return response.data;
+    },
+    createClientUser: async (clientId, userData) => {
+        const response = await api.post(`/clients/${clientId}/users`, userData);
+        return response.data;
+    },
+    getClientUsers: async (clientId) => {
+        const response = await api.get(`/clients/${clientId}/users`);
+        return response.data;
+    },
     createApiKey: async (clientId, keyData) => {
-        const response = await api.post(`/admin/clients/${clientId}/api-keys`, keyData);
+        const response = await api.post(`/clients/${clientId}/api/keys`, keyData);
         return response.data;
     },
     getClientApiKeys: async (clientId) => {
-        const response = await api.get(`/admin/clients/${clientId}/api-keys`);
+        const response = await api.get(`/clients/${clientId}/api/keys`);
         return response.data;
     },
 };

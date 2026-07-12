@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { useDashboardQuery } from '../hooks/useDashboardQuery';
+import { useAuth } from '../contexts/AuthContext';
 import StatsGrid from '../components/StatsGrid';
 import TopEndpoints from '../components/TopEndpoints';
 import { ApiHitsChart, StatusDistributionChart } from '../components/charts';
@@ -7,6 +8,7 @@ import { PageStatus } from '../components/ui';
 import styles from '../styles/modules/pages/PageComponents.module.scss';
 
 export function OverviewPage() {
+    const { user } = useAuth();
     const { data, isPending, error, refetch } = useDashboardQuery();
 
     const stats = data?.data?.stats ?? null;
@@ -46,7 +48,7 @@ export function OverviewPage() {
                 <StatusDistributionChart data={statusData} />
             </div>
 
-            <TopEndpoints endpoints={topEndpoints} />
+            {user?.role !== 'super_admin' && <TopEndpoints endpoints={topEndpoints} />}
         </div>
     );
 }
