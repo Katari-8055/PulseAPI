@@ -1,72 +1,67 @@
-import { useState, useEffect, useCallback, lazy, Suspense } from 'react';
+import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { useQueryClient } from '@tanstack/react-query';
 import Login from './components/Login';
-import { authApi } from './api/api';
+import Register from './components/Register';
 import { DashboardLayout } from './components/layout';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { ToastProvider } from './contexts/ToastContext';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 import ErrorBoundary from './components/ErrorBoundary';
+import { RoleGuard } from './guards/RoleGuard';
 
 const OverviewPage = lazy(() => import('./pages/OverviewPage').then(m => ({ default: m.OverviewPage })));
 const SettingsPage = lazy(() => import('./pages/SettingsPage').then(m => ({ default: m.SettingsPage })));
+const ApiKeysPage = lazy(() => import('./pages/ApiKeysPage').then(m => ({ default: m.ApiKeysPage })));
+const UsersPage = lazy(() => import('./pages/UsersPage').then(m => ({ default: m.UsersPage })));
+const AdminClientsPage = lazy(() => import('./pages/AdminClientsPage').then(m => ({ default: m.AdminClientsPage })));
+const ClientMonitoringPage = lazy(() => import('./pages/ClientMonitoringPage').then(m => ({ default: m.ClientMonitoringPage })));
 
 const pageFallback = (
-    <div style={{ height: '60vh', display: 'grid', placeItems: 'center' }}>Loading…</div>
+    <div className="flex items-center justify-center h-[60vh] text-muted-foreground">Loading…</div>
 );
 
-function AuthGate() {
-    const [isAuthenticated, setIsAuthenticated] = useState(null);
-    const queryClient = useQueryClient();
+function AppRoutes() {
+    const { user, isLoading, logout } = useAuth();
 
-    useEffect(() => {
-        const controller = new AbortController();
-        authApi.getProfile({ signal: controller.signal })
-            .then(() => setIsAuthenticated(true))
-            .catch((err) => {
-                if (err.name !== 'CanceledError' && err.name !== 'AbortError') {
-                    setIsAuthenticated(false);
-                }
-            });
-        return () => controller.abort();
-    }, []);
-
-    const handleLoginSuccess = () => setIsAuthenticated(true);
-
-    const handleLogout = useCallback(async () => {
-        try { await authApi.logout(); } catch { }
-        queryClient.clear();
-        setIsAuthenticated(false);
-    }, [queryClient]);
-
-    useEffect(() => {
-        if (isAuthenticated !== true) return;
-        const handle401 = () => {
-            queryClient.clear();
-            setIsAuthenticated(false);
-        };
-        window.addEventListener('auth:unauthorized', handle401);
-        return () => window.removeEventListener('auth:unauthorized', handle401);
-    }, [isAuthenticated, queryClient]);
-
-    if (isAuthenticated === null) {
+    if (isLoading) {
         return (
-            <div style={{ height: '100vh', display: 'grid', placeItems: 'center' }}>
+            <div className="flex items-center justify-center h-screen bg-background text-foreground">
                 Checking authentication…
             </div>
         );
     }
 
-    if (!isAuthenticated) {
-        return <Login onLoginSuccess={handleLoginSuccess} />;
+    if (!user) {
+        return (
+            <Routes>
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="*" element={<Navigate to="/login" replace />} />
+            </Routes>
+        );
     }
 
     return (
-        <DashboardLayout onLogout={handleLogout}>
+        <DashboardLayout onLogout={logout}>
             <Suspense fallback={pageFallback}>
                 <Routes>
+                    {/* Overview: all roles */}
                     <Route path="/" element={<OverviewPage />} />
-                    <Route path="/settings" element={<SettingsPage />} />
+
+                    {/* Client Admin + Super Admin: API Keys & Users */}
+                    <Route element={<RoleGuard allowedRoles={['super_admin', 'client_admin']} user={user} />}>
+                        <Route path="/api-keys" element={<ApiKeysPage />} />
+                        <Route path="/users" element={<UsersPage />} />
+                        <Route path="/settings" element={<SettingsPage />} />
+                    </Route>
+
+                    {/* Super Admin only: All Clients */}
+                    <Route element={<RoleGuard allowedRoles={['super_admin']} user={user} />}>
+                        <Route path="/admin/clients" element={<AdminClientsPage />} />
+                        <Route path="/admin/clients/:clientId" element={<ClientMonitoringPage />} />
+                    </Route>
+
+                    {/* Catch all */}
                     <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
             </Suspense>
@@ -80,7 +75,9 @@ function App() {
             <ThemeProvider>
                 <ToastProvider>
                     <BrowserRouter>
-                        <AuthGate />
+                        <AuthProvider>
+                            <AppRoutes />
+                        </AuthProvider>
                     </BrowserRouter>
                 </ToastProvider>
             </ThemeProvider>

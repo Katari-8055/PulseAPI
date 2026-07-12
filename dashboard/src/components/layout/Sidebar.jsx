@@ -1,98 +1,145 @@
 import { NavLink } from 'react-router-dom';
 import { cn } from '../../lib/utils';
+import { useAuth } from '../../contexts/AuthContext';
 import {
     LayoutDashboard,
     Settings,
     Zap,
+    Users,
+    KeyRound,
+    Activity,
+    ShieldCheck,
+    ChevronRight,
 } from 'lucide-react';
-import styles from '../../styles/modules/layout/Sidebar.module.scss';
 
-const navItems = [
-    {
-        title: 'Overview',
-        href: '/',
-        icon: LayoutDashboard,
-        description: 'Main dashboard view'
-    },
-];
-
-const bottomNavItems = [
-    {
-        title: 'Settings',
-        href: '/settings',
-        icon: Settings,
-        description: 'App settings'
-    },
-];
+// Nav items per role
+const NAV_ITEMS = {
+    super_admin: [
+        { title: 'Overview', href: '/', icon: LayoutDashboard, end: true },
+        { title: 'All Clients', href: '/admin/clients', icon: ShieldCheck },
+        { title: 'Activity', href: '/activity', icon: Activity },
+    ],
+    client_admin: [
+        { title: 'Overview', href: '/', icon: LayoutDashboard, end: true },
+        { title: 'API Keys', href: '/api-keys', icon: KeyRound },
+        { title: 'Users', href: '/users', icon: Users },
+        { title: 'Activity', href: '/activity', icon: Activity },
+    ],
+    client_viewer: [
+        { title: 'Overview', href: '/', icon: LayoutDashboard, end: true },
+        { title: 'Activity', href: '/activity', icon: Activity },
+    ],
+};
 
 export function Sidebar({ isOpen, onClose }) {
+    const { user } = useAuth();
+    const role = user?.role || 'client_viewer';
+    const navItems = NAV_ITEMS[role] || NAV_ITEMS.client_viewer;
+
+    const roleBadge = {
+        super_admin: { label: 'Super Admin', color: 'bg-purple-500/10 text-purple-400 ring-purple-500/20' },
+        client_admin: { label: 'Admin', color: 'bg-indigo-500/10 text-indigo-400 ring-indigo-500/20' },
+        client_viewer: { label: 'Viewer', color: 'bg-slate-500/10 text-slate-400 ring-slate-500/20' },
+    }[role] || { label: role, color: 'bg-slate-500/10 text-slate-400 ring-slate-500/20' };
+
     return (
         <>
+            {/* Mobile overlay */}
             {isOpen && (
                 <div
-                    className={styles.mobileOverlay}
+                    className="fixed inset-0 z-20 bg-slate-950/70 backdrop-blur-sm lg:hidden"
                     onClick={onClose}
-                    aria-hidden="true"
                 />
             )}
+
+            {/* Sidebar */}
             <aside
-                className={cn(styles.sidebar, !isOpen && styles.closed)}
-                aria-label="Sidebar"
-                aria-expanded={isOpen}
+                className={cn(
+                    'fixed top-0 left-0 z-30 h-full w-64 flex flex-col',
+                    'bg-slate-950 border-r border-slate-800/60',
+                    'transition-transform duration-300 ease-in-out',
+                    'lg:translate-x-0 lg:static lg:z-auto',
+                    isOpen ? 'translate-x-0' : '-translate-x-full'
+                )}
             >
-                <div className={styles.sidebarContainer}>
-                    <div className={styles.logoSection}>
-                        <div className={cn(styles.logoIcon, 'theme-logo-bg')}>
-                            <Zap aria-hidden="true" />
+                {/* Logo */}
+                <div className="flex items-center gap-3 px-5 py-5 border-b border-slate-800/60">
+                    <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600/10 text-indigo-400 ring-1 ring-indigo-500/20">
+                        <Zap className="w-4 h-4" />
+                    </div>
+                    <div>
+                        <p className="text-sm font-semibold text-slate-100 tracking-tight">PulseAPI</p>
+                        <p className="text-[10px] text-slate-500">API Management Platform</p>
+                    </div>
+                </div>
+
+                {/* User badge */}
+                <div className="px-4 py-3 border-b border-slate-800/40">
+                    <div className="flex items-center gap-2.5 px-2 py-1.5 rounded-lg bg-slate-900/60">
+                        <div className="flex-shrink-0 w-7 h-7 rounded-full bg-indigo-600 flex items-center justify-center text-xs font-semibold text-white">
+                            {(user?.username || user?.name || 'U')[0].toUpperCase()}
                         </div>
-                        <div className={styles.logoText}>
-                            <h2 className="theme-text-gradient">API Monitor</h2>
-                            <p>By Code Architecture</p>
+                        <div className="flex-1 min-w-0">
+                            <p className="text-xs font-medium text-slate-200 truncate">
+                                {user?.username || user?.name || 'User'}
+                            </p>
+                            <span className={cn(
+                                'inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium ring-1',
+                                roleBadge.color
+                            )}>
+                                {roleBadge.label}
+                            </span>
                         </div>
                     </div>
-                    <nav className={styles.navigation} aria-label="Main navigation">
-                        <div className={styles.navList}>
-                            {navItems.map((item) => {
-                                const Icon = item.icon;
-                                return (
-                                    <NavLink
-                                        key={item.href}
-                                        to={item.href}
-                                        end={item.href === '/'}
-                                        onClick={onClose}
-                                        className={({ isActive }) =>
-                                            cn(styles.navLink, isActive && styles.active)
-                                        }
-                                    >
-                                        <Icon aria-hidden="true" />
-                                        <div className={styles.navItem}>
-                                            <div>{item.title}</div>
-                                        </div>
-                                    </NavLink>
-                                );
-                            })}
-                        </div>
-                    </nav>
-                    <div className={styles.bottomNavigation}>
-                        {bottomNavItems.map((item) => {
-                            const Icon = item.icon;
-                            return (
-                                <NavLink
-                                    key={item.href}
-                                    to={item.href}
-                                    onClick={onClose}
-                                    className={({ isActive }) =>
-                                        cn(styles.navLink, isActive && styles.active)
-                                    }
-                                >
-                                    <Icon aria-hidden="true" />
-                                    <div className={styles.navItem}>
-                                        <div>{item.title}</div>
-                                    </div>
-                                </NavLink>
-                            );
-                        })}
-                    </div>
+                </div>
+
+                {/* Navigation */}
+                <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
+                    <p className="text-[10px] font-medium text-slate-600 uppercase tracking-wider px-2 mb-2">
+                        Navigation
+                    </p>
+                    {navItems.map((item) => {
+                        const Icon = item.icon;
+                        return (
+                            <NavLink
+                                key={item.href}
+                                to={item.href}
+                                end={item.end}
+                                onClick={onClose}
+                                className={({ isActive }) => cn(
+                                    'group flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all duration-150',
+                                    isActive
+                                        ? 'bg-indigo-600/10 text-indigo-400 font-medium'
+                                        : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                                )}
+                            >
+                                {({ isActive }) => (
+                                    <>
+                                        <Icon className={cn('w-4 h-4 flex-shrink-0', isActive ? 'text-indigo-400' : 'text-slate-500 group-hover:text-slate-300')} />
+                                        <span className="flex-1">{item.title}</span>
+                                        {isActive && <ChevronRight className="w-3 h-3 text-indigo-400/60" />}
+                                    </>
+                                )}
+                            </NavLink>
+                        );
+                    })}
+                </nav>
+
+                {/* Bottom nav */}
+                <div className="px-3 py-3 border-t border-slate-800/60">
+                    <NavLink
+                        to="/settings"
+                        onClick={onClose}
+                        className={({ isActive }) => cn(
+                            'group flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all duration-150',
+                            isActive
+                                ? 'bg-indigo-600/10 text-indigo-400 font-medium'
+                                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                        )}
+                    >
+                        <Settings className="w-4 h-4 text-slate-500 group-hover:text-slate-300" />
+                        <span>Settings</span>
+                    </NavLink>
                 </div>
             </aside>
         </>
