@@ -64,7 +64,7 @@ export function AdminClientsPage() {
                 {[
                     { label: 'Total Clients', value: clients.length, icon: Building2 },
                     { label: 'Active', value: clients.filter(c => c.isActive).length, icon: Users },
-                    { label: 'Total Keys', value: '—', icon: KeyRound },
+                    { label: 'Total Keys', value: clients.reduce((sum, c) => sum + (c.keysCount || 0), 0), icon: KeyRound },
                 ].map((s) => {
                     const Icon = s.icon;
                     return (

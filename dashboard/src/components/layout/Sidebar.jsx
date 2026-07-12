@@ -7,7 +7,6 @@ import {
     Zap,
     Users,
     KeyRound,
-    Activity,
     ShieldCheck,
     ChevronRight,
 } from 'lucide-react';
@@ -17,17 +16,14 @@ const NAV_ITEMS = {
     super_admin: [
         { title: 'Overview', href: '/', icon: LayoutDashboard, end: true },
         { title: 'All Clients', href: '/admin/clients', icon: ShieldCheck },
-        { title: 'Activity', href: '/activity', icon: Activity },
     ],
     client_admin: [
         { title: 'Overview', href: '/', icon: LayoutDashboard, end: true },
         { title: 'API Keys', href: '/api-keys', icon: KeyRound },
         { title: 'Users', href: '/users', icon: Users },
-        { title: 'Activity', href: '/activity', icon: Activity },
     ],
     client_viewer: [
         { title: 'Overview', href: '/', icon: LayoutDashboard, end: true },
-        { title: 'Activity', href: '/activity', icon: Activity },
     ],
 };
 
