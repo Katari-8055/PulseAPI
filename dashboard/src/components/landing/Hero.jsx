@@ -73,14 +73,14 @@ app.use(monitoring({
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
                 <div className="text-center max-w-3xl mx-auto mb-16 md:mb-24">
                     {/* Tiny badge */}
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 text-xs font-semibold mb-6 animate-pulse">
-                        <span className="w-1.5 h-1.5 rounded-full bg-indigo-400" />
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20 text-xs font-semibold mb-6">
+                        <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 dark:bg-indigo-400 animate-pulse" />
                         Continuous API Monitoring
                     </div>
                     
                     <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-foreground leading-[1.1] mb-6">
                         Catch API failures <br />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-indigo-500">
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-violet-600 to-indigo-700 dark:from-indigo-400 dark:via-purple-400 dark:to-indigo-500">
                             before your customers do.
                         </span>
                     </h1>
@@ -99,7 +99,7 @@ app.use(monitoring({
                         </Link>
                         <button
                             onClick={scrollToDocs}
-                            className="w-full sm:w-auto flex items-center justify-center gap-2 text-sm font-semibold text-foreground bg-muted/60 hover:bg-muted border border-border/40 hover:border-border/80 px-6 py-3.5 rounded-xl transition-all cursor-pointer"
+                            className="w-full sm:w-auto flex items-center justify-center gap-2 text-sm font-semibold text-foreground bg-muted/60 hover:bg-muted border border-border/50 hover:border-border px-6 py-3.5 rounded-xl transition-all cursor-pointer"
                         >
                             Read Documentation
                         </button>
