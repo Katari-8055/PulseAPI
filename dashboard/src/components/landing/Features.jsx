@@ -73,10 +73,10 @@ export default function Features() {
                                 key={idx} 
                                 className="group flex flex-col p-6 rounded-2xl bg-card hover:bg-card/75 border border-border/40 hover:border-border transition-all duration-300"
                             >
-                                <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-muted/40 border border-border/45 text-indigo-400 group-hover:text-indigo-300 group-hover:bg-muted/70 shadow-sm transition-all mb-5">
+                                <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-muted/40 border border-border/45 text-indigo-600 dark:text-indigo-400 group-hover:text-indigo-700 dark:group-hover:text-indigo-300 group-hover:bg-indigo-50 dark:group-hover:bg-muted/70 shadow-sm transition-all mb-5">
                                     <Icon className="w-5 h-5" />
                                 </div>
-                                <h3 className="text-sm font-semibold text-foreground mb-2 group-hover:text-indigo-500 dark:group-hover:text-indigo-400 transition-colors">
+                                <h3 className="text-sm font-semibold text-foreground mb-2 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
                                     {f.title}
                                 </h3>
                                 <p className="text-xs text-muted-foreground leading-relaxed flex-1">

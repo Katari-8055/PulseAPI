@@ -55,7 +55,7 @@ export default function HowItWorks() {
                                     <Icon className="w-8 h-8 mt-2" />
                                 </div>
 
-                                <h3 className="text-base font-semibold text-foreground mb-2 group-hover:text-indigo-550 dark:group-hover:text-indigo-400 transition-colors">
+                                <h3 className="text-base font-semibold text-foreground mb-2 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
                                     {s.title}
                                 </h3>
                                 <p className="text-xs text-muted-foreground leading-relaxed max-w-xs">

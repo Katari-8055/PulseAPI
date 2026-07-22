@@ -12,8 +12,8 @@ export default function About() {
                     
                     {/* Visual Badge details */}
                     <div className="space-y-6">
-                        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-500/10 text-purple-400 border border-purple-500/20 text-xs font-semibold">
-                            <Heart className="w-3.5 h-3.5 fill-purple-400/20" />
+                        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-500/10 text-purple-700 dark:text-purple-400 border border-purple-500/20 text-xs font-semibold">
+                            <Heart className="w-3.5 h-3.5 fill-purple-500/20 dark:fill-purple-400/20" />
                             Our Philosophy
                         </div>
                         
@@ -36,21 +36,21 @@ export default function About() {
                         
                         <div className="space-y-4">
                             <div className="flex gap-3">
-                                <CheckCircle2 className="w-5 h-5 text-indigo-400 flex-shrink-0 mt-0.5" />
+                                <CheckCircle2 className="w-5 h-5 text-indigo-600 dark:text-indigo-400 flex-shrink-0 mt-0.5" />
                                 <div>
                                     <h4 className="text-sm font-semibold text-foreground">Zero Server Bloat</h4>
                                     <p className="text-xs text-muted-foreground mt-1">Our tracking client functions asynchronously, ensuring no request processing blocking or overhead latency.</p>
                                 </div>
                             </div>
                             <div className="flex gap-3">
-                                <CheckCircle2 className="w-5 h-5 text-indigo-400 flex-shrink-0 mt-0.5" />
+                                <CheckCircle2 className="w-5 h-5 text-indigo-600 dark:text-indigo-400 flex-shrink-0 mt-0.5" />
                                 <div>
                                     <h4 className="text-sm font-semibold text-foreground">Focused Alert Thresholds</h4>
                                     <p className="text-xs text-muted-foreground mt-1">Easily filter transient latency spikes from actual outages, preventing alert fatigue in developer channels.</p>
                                 </div>
                             </div>
                             <div className="flex gap-3">
-                                <CheckCircle2 className="w-5 h-5 text-indigo-400 flex-shrink-0 mt-0.5" />
+                                <CheckCircle2 className="w-5 h-5 text-indigo-600 dark:text-indigo-400 flex-shrink-0 mt-0.5" />
                                 <div>
                                     <h4 className="text-sm font-semibold text-foreground">Secure by Design</h4>
                                     <p className="text-xs text-muted-foreground mt-1">Sensitive header attributes and token hashes are redacted locally on client servers before dispatching metrics.</p>

@@ -69,10 +69,10 @@ export default function Footer() {
                 </div>
 
                 <div className="mt-8 pt-8 border-t border-border/10 flex flex-col sm:flex-row items-center justify-between gap-4">
-                    <span className="text-[11px] text-slate-500">
+                    <span className="text-[11px] text-muted-foreground/70">
                         &copy; {currentYear} PulseAPI Inc. All rights reserved.
                     </span>
-                    <span className="text-[11px] text-slate-600 font-mono">
+                    <span className="text-[11px] text-muted-foreground/50 font-mono">
                         Handcrafted for modern backend architectures.
                     </span>
                 </div>

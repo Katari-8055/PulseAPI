@@ -152,11 +152,11 @@ SERVICE_NAME=blog-api`
                                     }`}
                                 >
                                     <div>
-                                        <div className="text-xs font-semibold tracking-wide uppercase font-mono text-indigo-400 mb-0.5">{key}</div>
+                                        <div className="text-xs font-semibold tracking-wide uppercase font-mono text-indigo-600 dark:text-indigo-400 mb-0.5">{key}</div>
                                         <div className="text-sm font-semibold">{section.title}</div>
                                     </div>
                                     <Code className={`w-4 h-4 transition-transform duration-300 ${
-                                        activeTab === key ? 'rotate-12 text-indigo-400' : 'text-slate-600'
+                                        activeTab === key ? 'rotate-12 text-indigo-600 dark:text-indigo-400' : 'text-muted-foreground/40'
                                     }`} />
                                 </button>
                             ))}
@@ -165,7 +165,7 @@ SERVICE_NAME=blog-api`
                         <div className="pt-2">
                             <Link
                                 to="/register"
-                                className="inline-flex items-center gap-2 text-sm font-semibold text-indigo-400 hover:text-indigo-300 group"
+                                className="inline-flex items-center gap-2 text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 group"
                             >
                                 View all SDK Docs
                                 <span className="group-hover:translate-x-1 transition-transform">→</span>
@@ -175,16 +175,23 @@ SERVICE_NAME=blog-api`
 
                     {/* Right side: Interactive Code Viewer */}
                     <div className="lg:col-span-7">
-                        <div className="rounded-2xl border border-slate-800 bg-slate-950 shadow-xl overflow-hidden">
+                        <div className="rounded-2xl border border-border/50 bg-zinc-950 shadow-xl overflow-hidden ring-1 ring-white/5">
                             {/* Header bar */}
-                            <div className="flex items-center justify-between px-4 py-3 bg-slate-900/40 border-b border-slate-900">
-                                <div className="flex items-center gap-2">
-                                    <Terminal className="w-4 h-4 text-indigo-400" />
-                                    <span className="text-xs font-mono font-medium text-slate-400">{docSections[activeTab].title}</span>
+                            <div className="flex items-center justify-between px-4 py-3 bg-zinc-900/80 border-b border-zinc-800/60">
+                                <div className="flex items-center gap-3">
+                                    {/* Window dots */}
+                                    <div className="flex items-center gap-1.5">
+                                        <span className="w-2.5 h-2.5 rounded-full bg-red-500/70" />
+                                        <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/70" />
+                                        <span className="w-2.5 h-2.5 rounded-full bg-green-500/70" />
+                                    </div>
+                                    <div className="w-px h-3.5 bg-zinc-700/60" />
+                                    <Terminal className="w-3.5 h-3.5 text-indigo-400" />
+                                    <span className="text-xs font-mono font-medium text-zinc-400">{docSections[activeTab].title}</span>
                                 </div>
                                 <button
                                     onClick={() => handleCopy(docSections[activeTab].code)}
-                                    className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-medium font-mono text-slate-400 hover:text-slate-200 bg-slate-950 border border-slate-850 hover:border-slate-800 rounded transition-colors"
+                                    className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-medium font-mono text-zinc-400 hover:text-zinc-200 bg-zinc-900 border border-zinc-800 hover:border-zinc-700 rounded-lg transition-colors"
                                 >
                                     {copied ? (
                                         <>
@@ -201,13 +208,13 @@ SERVICE_NAME=blog-api`
                             </div>
 
                             {/* Description sub-bar */}
-                            <div className="px-5 py-3 border-b border-slate-900 bg-slate-900/10 text-xs text-slate-400">
+                            <div className="px-5 py-2.5 border-b border-zinc-800/60 bg-zinc-900/30 text-xs text-zinc-500 font-mono">
                                 {docSections[activeTab].desc}
                             </div>
 
                             {/* Pre code */}
-                            <div className="p-5 font-mono text-xs text-slate-300 leading-relaxed overflow-x-auto select-all max-h-[360px]">
-                                <pre className="text-indigo-200">
+                            <div className="p-5 font-mono text-xs leading-relaxed overflow-x-auto select-all max-h-[360px]">
+                                <pre className="text-indigo-300/90">
                                     <code>{docSections[activeTab].code}</code>
                                 </pre>
                             </div>
