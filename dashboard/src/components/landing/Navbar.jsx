@@ -30,11 +30,10 @@ export default function Navbar() {
 
     return (
         <nav
-            className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-                scrolled
+            className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled
                     ? 'bg-background/85 backdrop-blur-md border-b border-border/40 shadow-sm'
                     : 'bg-transparent'
-            }`}
+                }`}
         >
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-16">
@@ -77,14 +76,14 @@ export default function Navbar() {
                     {/* Action buttons */}
                     <div className="hidden md:flex items-center gap-4">
                         <a
-                            href="https://github.com"
+                            href="https://github.com/Katari-8055/PulseAPI"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-muted-foreground hover:text-foreground transition-colors"
                         >
                             <Github className="w-5 h-5" />
                         </a>
-                        
+
                         <button
                             onClick={() => switchTheme(currentTheme === 'dark' ? 'light' : 'dark')}
                             className="p-2 rounded-lg hover:bg-muted/50 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
