@@ -2,6 +2,21 @@ import { Card, CardContent } from './ui';
 import { TrendingUp, Clock, AlertTriangle, CheckCircle2, Layers, Zap } from 'lucide-react';
 import styles from '../styles/modules/StatsGrid.module.scss';
 
+function getTimeframeSubtitle(stats) {
+    if (!stats?.timeRange?.start || !stats?.timeRange?.end) {
+        return 'Selected timeframe';
+    }
+    const start = new Date(stats.timeRange.start);
+    const end = new Date(stats.timeRange.end);
+    const diffHours = Math.max(1, Math.round((end.getTime() - start.getTime()) / (1000 * 60 * 60)));
+
+    if (diffHours <= 1) return 'Last 1 hour';
+    if (diffHours <= 4) return 'Last 4 hours';
+    if (diffHours <= 24) return 'Last 24 hours';
+    const days = Math.round(diffHours / 24);
+    return `Last ${days} days`;
+}
+
 function StatsGrid({ stats }) {
     const successRate = 100 - stats.errorRate;
 
@@ -9,7 +24,7 @@ function StatsGrid({ stats }) {
         {
             title: 'Total Hits',
             value: stats.totalHits.toLocaleString(),
-            subtitle: 'Last 24 hours',
+            subtitle: getTimeframeSubtitle(stats),
             icon: TrendingUp,
             gradientClass: styles.gradientBlue,
             bgClass: styles.bgBlue,
