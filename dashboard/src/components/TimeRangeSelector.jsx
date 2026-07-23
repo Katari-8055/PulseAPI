@@ -3,37 +3,34 @@ import { Calendar, Clock, ChevronDown, X } from 'lucide-react';
 import styles from '../styles/modules/ui/TimeRangeSelector.module.scss';
 
 const PRESETS = [
-    { label: '1H',  value: '1h',  hours: 1   },
-    { label: '4H',  value: '4h',  hours: 4   },
-    { label: '24H', value: '24h', hours: 24  },
-    { label: '7D',  value: '7d',  hours: 168 },
+    { label: '1H', value: '1h', hours: 1 },
+    { label: '4H', value: '4h', hours: 4 },
+    { label: '24H', value: '24h', hours: 24 },
+    { label: '7D', value: '7d', hours: 168 },
     { label: '30D', value: '30d', hours: 720 },
 ];
 
-/**
+/** 
  * TimeRangeSelector
  * Props:
- *   onChange({ startTime, endTime, preset }) — called whenever the user picks a range.
- *   value — current active preset string ('1h'|'4h'|'24h'|'7d'|'30d'|'custom') for controlled mode.
- *   defaultPreset — fallback default preset value (default '24h').
+ *   onChange({ startTime, endTime }) — called whenever the user picks a range.
+ *   defaultPreset — one of the preset values above (default '24h').
  */
-export default function TimeRangeSelector({ onChange, value, defaultPreset = '24h' }) {
-    const [internalSelected, setInternalSelected] = useState(defaultPreset);
-    const [showCustom, setShowCustom]             = useState(false);
-    const [customStart, setCustomStart]           = useState('');
-    const [customEnd, setCustomEnd]               = useState('');
-    const [customError, setCustomError]           = useState('');
-
-    const selected = value !== undefined ? value : internalSelected;
+export default function TimeRangeSelector({ onChange, defaultPreset = '24h' }) {
+    const [selected, setSelected] = useState(defaultPreset);
+    const [showCustom, setShowCustom] = useState(false);
+    const [customStart, setCustomStart] = useState('');
+    const [customEnd, setCustomEnd] = useState('');
+    const [customError, setCustomError] = useState('');
 
     const applyPreset = (preset) => {
-        setInternalSelected(preset.value);
+        setSelected(preset.value);
         setShowCustom(false);
         setCustomError('');
 
-        const endTime   = new Date();
+        const endTime = new Date();
         const startTime = new Date(endTime.getTime() - preset.hours * 60 * 60 * 1000);
-        onChange({ startTime: startTime.toISOString(), endTime: endTime.toISOString(), preset: preset.value });
+        onChange({ startTime: startTime.toISOString(), endTime: endTime.toISOString() });
     };
 
     const applyCustom = () => {
@@ -42,28 +39,30 @@ export default function TimeRangeSelector({ onChange, value, defaultPreset = '24
             return;
         }
         const start = new Date(customStart);
-        const end   = new Date(customEnd);
+        const end = new Date(customEnd);
         if (start >= end) {
             setCustomError('Start must be before end.');
             return;
         }
         setCustomError('');
-        setInternalSelected('custom');
+        setSelected('custom');
         setShowCustom(false);
-        onChange({ startTime: start.toISOString(), endTime: end.toISOString(), preset: 'custom' });
+        onChange({ startTime: start.toISOString(), endTime: end.toISOString() });
     };
 
     const clearCustom = () => {
-        setInternalSelected('24h');
+        setSelected('24h');
         setCustomStart('');
         setCustomEnd('');
         setShowCustom(false);
         setCustomError('');
-        const endTime   = new Date();
+        // Re-apply 24h default
+        const endTime = new Date();
         const startTime = new Date(endTime.getTime() - 24 * 60 * 60 * 1000);
-        onChange({ startTime: startTime.toISOString(), endTime: endTime.toISOString(), preset: '24h' });
+        onChange({ startTime: startTime.toISOString(), endTime: endTime.toISOString() });
     };
 
+    // Format a datetime-local string to a readable label
     const formatCustomLabel = () => {
         if (!customStart || !customEnd) return 'Custom';
         const fmt = (d) => new Date(d).toLocaleString('en-IN', {
@@ -72,6 +71,7 @@ export default function TimeRangeSelector({ onChange, value, defaultPreset = '24
         return `${fmt(customStart)} → ${fmt(customEnd)}`;
     };
 
+    // Max value for date inputs = now (can't pick future)
     const nowLocal = new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
         .toISOString()
         .slice(0, 16);
@@ -84,10 +84,9 @@ export default function TimeRangeSelector({ onChange, value, defaultPreset = '24
                 {PRESETS.map((p) => (
                     <button
                         key={p.value}
-                        type="button"
                         className={`${styles.presetBtn} ${selected === p.value ? styles.active : ''}`}
                         onClick={() => applyPreset(p)}
-                        title={`Select last ${p.label}`}
+                        title={`Last ${p.label}`}
                     >
                         {p.label}
                     </button>
@@ -95,10 +94,9 @@ export default function TimeRangeSelector({ onChange, value, defaultPreset = '24
 
                 {/* Custom range toggle */}
                 <button
-                    type="button"
                     className={`${styles.presetBtn} ${styles.customBtn} ${selected === 'custom' ? styles.active : ''}`}
                     onClick={() => setShowCustom((v) => !v)}
-                    title="Select custom date & time range"
+                    title="Custom time range"
                 >
                     <Calendar className={styles.btnIcon} />
                     {selected === 'custom' ? formatCustomLabel() : 'Custom'}
@@ -107,7 +105,7 @@ export default function TimeRangeSelector({ onChange, value, defaultPreset = '24
 
                 {/* Clear custom */}
                 {selected === 'custom' && (
-                    <button type="button" className={styles.clearBtn} onClick={clearCustom} title="Clear custom range">
+                    <button className={styles.clearBtn} onClick={clearCustom} title="Clear custom range">
                         <X className={styles.btnIcon} />
                     </button>
                 )}
@@ -147,10 +145,10 @@ export default function TimeRangeSelector({ onChange, value, defaultPreset = '24
                     )}
 
                     <div className={styles.panelActions}>
-                        <button type="button" className={styles.cancelBtn} onClick={() => setShowCustom(false)}>
+                        <button className={styles.cancelBtn} onClick={() => setShowCustom(false)}>
                             Cancel
                         </button>
-                        <button type="button" className={styles.applyBtn} onClick={applyCustom}>
+                        <button className={styles.applyBtn} onClick={applyCustom}>
                             Apply Range
                         </button>
                     </div>
