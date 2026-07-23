@@ -55,20 +55,20 @@ export function ClientMonitoringPage() {
             <div className="mb-6">
                 <Link
                     to="/admin/clients"
-                    className="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-indigo-400 transition-colors mb-4 group"
+                    className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors mb-4 group cursor-pointer"
                 >
                     <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                     Back to Clients
                 </Link>
                 
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-900/40 border border-slate-800/80 p-5 rounded-2xl backdrop-blur-md">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-card border border-border/80 p-5 rounded-2xl backdrop-blur-md">
                     <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-xl bg-indigo-600/10 text-indigo-400 flex items-center justify-center ring-1 ring-indigo-500/20">
+                        <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center ring-1 ring-primary/20">
                             <Building2 className="w-6 h-6" />
                         </div>
                         <div>
-                            <h2 className="text-xl font-semibold text-slate-100">{client.name}</h2>
-                            <p className="text-xs text-slate-400 mt-1">{client.description || 'No description provided.'}</p>
+                            <h2 className="text-xl font-semibold text-foreground">{client.name}</h2>
+                            <p className="text-xs text-muted-foreground mt-1">{client.description || 'No description provided.'}</p>
                         </div>
                     </div>
                     {client.website && (
@@ -76,7 +76,7 @@ export function ClientMonitoringPage() {
                             href={client.website}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1.5 text-xs text-indigo-400 hover:text-indigo-300 bg-indigo-600/5 hover:bg-indigo-600/10 px-3 py-1.5 rounded-lg border border-indigo-500/10 hover:border-indigo-500/20 transition-all font-medium self-start md:self-center"
+                            className="inline-flex items-center gap-1.5 text-xs text-primary hover:text-primary/80 bg-primary/5 hover:bg-primary/10 px-3 py-1.5 rounded-lg border border-primary/10 hover:border-primary/20 transition-all font-medium self-start md:self-center cursor-pointer"
                         >
                             <Globe className="w-3.5 h-3.5" />
                             Visit Website
