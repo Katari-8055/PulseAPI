@@ -21,13 +21,12 @@
 
 .headerWithActions {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
-
-  @media (min-width: 640px) {
-    align-items: flex-start;
-  }
+  gap: 1rem;
+  flex-wrap: wrap;
 }
+
 
 .sectionCard {
   border: 1px solid hsl(var(--border) / 0.5);
