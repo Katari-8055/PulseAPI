@@ -89,7 +89,7 @@ export const clientApi = {
         const response = await api.get('/clients/me/api/keys');
         return response.data;
     },
-    
+
     // Super Admin & Specific Client Org routes
     createClient: async (clientData) => {
         // Technically backend doesn't have POST /admin/clients anymore.

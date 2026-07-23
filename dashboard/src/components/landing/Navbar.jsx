@@ -6,7 +6,7 @@ import { useTheme } from '../../contexts/ThemeContext';
 export default function Navbar() {
     const [isOpen, setIsOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
-    const { currentTheme } = useTheme();
+    const { currentTheme, switchTheme } = useTheme();
 
     useEffect(() => {
         const handleScroll = () => {
@@ -86,11 +86,11 @@ export default function Navbar() {
                         </a>
                         
                         <button
-                            onClick={() => switchTheme(currentTheme === 'purple' ? 'light' : 'purple')}
+                            onClick={() => switchTheme(currentTheme === 'dark' ? 'light' : 'dark')}
                             className="p-2 rounded-lg hover:bg-muted/50 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
-                            title={`Switch to ${currentTheme === 'purple' ? 'Light' : 'Purple'} theme`}
+                            title={`Switch to ${currentTheme === 'dark' ? 'Light' : 'Dark'} theme`}
                         >
-                            {currentTheme === 'purple' ? <Sun className="w-4.5 h-4.5" /> : <Moon className="w-4.5 h-4.5" />}
+                            {currentTheme === 'dark' ? <Sun className="w-4.5 h-4.5" /> : <Moon className="w-4.5 h-4.5" />}
                         </button>
 
                         <Link
@@ -110,10 +110,10 @@ export default function Navbar() {
                     {/* Mobile menu button */}
                     <div className="md:hidden flex items-center gap-3">
                         <button
-                            onClick={() => switchTheme(currentTheme === 'purple' ? 'light' : 'purple')}
+                            onClick={() => switchTheme(currentTheme === 'dark' ? 'light' : 'dark')}
                             className="p-2 rounded-lg hover:bg-muted/50 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
                         >
-                            {currentTheme === 'purple' ? <Sun className="w-4.5 h-4.5" /> : <Moon className="w-4.5 h-4.5" />}
+                            {currentTheme === 'dark' ? <Sun className="w-4.5 h-4.5" /> : <Moon className="w-4.5 h-4.5" />}
                         </button>
                         <button
                             onClick={() => setIsOpen(!isOpen)}
