@@ -349,11 +349,10 @@ export class ClientService {
                 return null;
             }
 
-            if (key.isExpired()) {
+            if (key.expiresAt && key.expiresAt < Date.now()) {
                 return null;
             }
 
-            // Get the populated client from the key
             const client = key.clientId;
 
             return {
