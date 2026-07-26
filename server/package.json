@@ -24,6 +24,7 @@
     "express-rate-limit": "^8.2.1",
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.3",
+    "lru-cache": "^11.5.2",
     "mongoose": "^9.2.3",
     "pg": "^8.19.0",
     "uuid": "^13.0.0",
