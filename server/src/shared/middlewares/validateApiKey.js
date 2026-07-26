@@ -4,22 +4,21 @@ import clientContainer from '../../services/client/Dependencies/dependencies.js'
 import apiKeyCache from '../cache/lrucache.js';
 
 /**
- * Middleware to validate API keys against database (with LRU cache).
- * Used for external services posting events via the ingest route.
+ * API Key LRU Cache
  *
- * Cache behaviour:
- *  - HIT  → no DB call; validate directly from cached { client, apiKey } POJO
- *  - MISS → DB query via getClientByApiKey() → result stored in cache (TTL: 10 min)
+ * - capacity : 500 unique API keys
+ * - TTL      : 5 minutes per entry
  *
- * Cache invalidation:
- *  - When a client is deactivated, the cache entry is evicted so the next
- *    request re-fetches from DB and fails correctly.
- *  - Keys with no ingest permission are KEPT in cache (permission is a stable
- *    DB state; there is no point re-querying on every request).
+ * Cache entry shape: { client, apiKey }
+ * On a cache HIT  → no DB call is made
+ * On a cache MISS → DB is queried and result is stored in cache
  *
- * To manually invalidate from another module (e.g. key revocation endpoint):
- *   import apiKeyCache from '../cache/lrucache.js';
- *   apiKeyCache.delete(rawKeyValue);
+ * To invalidate a key (e.g. after revocation / update):
+ *   apiKeyCache.delete(keyValue)
+ */
+/**
+ * Middleware to validate API keys against database (with LRU cache)
+ * Used for external services posting events
  */
 const validateApiKey = async (req, res, next) => {
     try {
@@ -59,10 +58,9 @@ const validateApiKey = async (req, res, next) => {
 
         const { client, apiKey: apiKeyObj } = result;
 
-        // Check if client is active.
-        // Evict from cache so the next request re-fetches from DB in case the
-        // account is reactivated later.
+        // Check if client is active
         if (!client.isActive) {
+            // Evict from cache so next request re-checks DB
             apiKeyCache.delete(apiKey);
 
             logger.warn('Inactive client attempted API access', {
@@ -75,10 +73,9 @@ const validateApiKey = async (req, res, next) => {
                 .json(ResponseFormatter.error('Client account is inactive', 403));
         }
 
-        // Check API key ingest permission.
-        // NOT evicted from cache: permission state is stable and the key is
-        // still valid in the DB — re-querying would return the same result.
+        // Check API key permissions
         if (!apiKeyObj.permissions?.canIngest) {
+            apiKeyCache.delete(apiKey);
             logger.warn('API key without ingest permission attempted access', {
                 path: req.path,
                 ip: req.ip,

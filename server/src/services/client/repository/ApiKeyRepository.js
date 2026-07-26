@@ -29,30 +29,10 @@ class MongoApiKeyRepository extends BaseApiKeyRepository {
     }
 
     /**
-     * Find API key by key value — optimised for the auth hot path.
-     *
-     * Optimisations applied:
-     *  1. `.lean()` — returns a plain JS object instead of a full Mongoose
-     *     document. Skips hydration, virtuals, and prototype setup.
-     *     ~2-5× faster for read-only lookups. Safe here because the caller
-     *     only reads the result; it never calls `.save()` or Mongoose methods.
-     *
-     *  2. `.select()` — fetches only the fields the auth middleware actually
-     *     needs. Omits `metadata`, `security.allowedIPs`, `security.allowedOrigins`,
-     *     `security.rotationWarningDays`, `description`, `createdBy` etc.,
-     *     which reduces document size and wire transfer from MongoDB.
-     *
-     *  3. Selective `.populate()` — loads only `_id`, `name`, and `isActive`
-     *     from the Client collection. Prevents fetching `password`, `description`,
-     *     `website`, `settings`, and `slug` on every ingest request.
-     *
-     *  4. The compound index `{ keyValue: 1, isActive: 1 }` (defined in
-     *     ApiKey.js) is used automatically by this query, giving O(log n)
-     *     lookup without a collection scan.
-     *
-     * @param {string}  keyValue        - Raw API key string from request header
-     * @param {boolean} includeInactive - If true, also matches inactive keys
-     * @returns {Promise<Object|null>}  - Lean POJO or null
+     * Find API key by key value
+     * @param {string} keyValue - API key value
+     * @param {boolean} includeInactive - Include inactive keys
+     * @returns {Promise<Object|null>}
      */
     async findByKeyValue(keyValue, includeInactive = false) {
         try {
@@ -61,17 +41,7 @@ class MongoApiKeyRepository extends BaseApiKeyRepository {
                 filter.isActive = true;
             }
 
-            const apiKey = await this.model
-                .findOne(filter)
-                // Only the fields the auth middleware inspects
-                .select('keyValue clientId isActive permissions expiresAt')
-                .populate({
-                    path: 'clientId',
-                    // Only the fields validateApiKey.js reads from `client`
-                    select: '_id name isActive',
-                })
-                .lean();
-
+            const apiKey = await this.model.findOne(filter).populate('clientId').lean();
             return apiKey;
         } catch (error) {
             logger.error('Error finding API key by value:', error);
