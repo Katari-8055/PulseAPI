@@ -24,12 +24,6 @@ export class IngestController {
      */
     async ingestHit(req, res, next) {
         try {
-            logger.info('Ingest: Client data received', {
-                clientId: req.client._id,
-                clientName: req.client.name,
-                clientKeys: Object.keys(req.client)
-            });
-
             const hitData = {
                 ...req.body,
                 clientId: req.client._id,
@@ -37,12 +31,6 @@ export class IngestController {
                 ip: req.ip || req.connection.remoteAddress,
                 userAgent: req.headers['user-agent'] || ''
             };
-
-            logger.info('Ingest: Hit data prepared', {
-                clientId: req.client._id,
-                endpoint: hitData.endpoint,
-                method: hitData.method
-            });
 
             const result = await this.ingestService.ingestApiHit(hitData);
 

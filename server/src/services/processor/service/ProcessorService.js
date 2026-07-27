@@ -31,31 +31,14 @@ export class ProcessorService {
         let rawEventSaved = false;
 
         try {
-            logger.info('Processing event data:', {
-                eventId: eventData.eventId,
-                clientId: eventData.clientId,
-                serviceName: eventData.serviceName,
-                endpoint: eventData.endpoint,
-                method: eventData.method,
-            });
-
             // STEP 1: save data to MongoDB
             // Yeh succeed hoga ya fir pura operation fail hoga
             await this.apiHitRepository.save(eventData)
             rawEventSaved = true;
 
-            logger.info('Raw event saved to MongoD:', {
-                eventId: eventData.eventId
-            });
-
             // STEP 2: PG Main data upsert karege;
             // Agar ye fail ho gaya, to ham pure operation ko fail nhi karege!
-
             await this._updateMetricsWithFallback(eventData);
-
-            logger.info('Event processed successfully:', {
-                eventId: eventData.eventId
-            });
         } catch (error) {
             if (!rawEventSaved) {
                 logger.error('Critical: Failed to save raw event to MongoDB:', {
@@ -92,10 +75,6 @@ export class ProcessorService {
             };
 
             await this.metricsRepository.upsertEndpointMetrics(metricsData);
-
-            logger.info('Metrics updated successfully', {
-                eventId: eventData.eventId,
-            });
         } catch (error) {
             throw error;
         }

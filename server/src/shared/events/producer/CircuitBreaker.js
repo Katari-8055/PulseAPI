@@ -117,14 +117,6 @@ export class CircuitBreaker {
     allowRequest() {
         const current = this.state;
 
-        this.logger.debug('[CircuitBreaker] allowRequest check', {
-            state: current,
-            halfOpenAttempts: this._halfOpenAttempts,
-            halfOpenMaxAttempts: this.halfOpenMaxAttempts,
-            halfOpenSuccesses: this._halfOpenSuccesses,
-            failures: this._failures
-        });
-
         // In CLOSED state, all requests are allowed. 
         if (current === CircuitState.CLOSED) return true;
 
@@ -151,13 +143,6 @@ export class CircuitBreaker {
      * @returns {void}
      */
     onSuccess() {
-        this.logger.info('[CircuitBreaker] success recorded', {
-            state: this._state,
-            halfOpenSuccesses: this._halfOpenSuccesses,
-            halfOpenMaxAttempts: this.halfOpenMaxAttempts,
-            failures: this._failures
-        });
-
         if (this._state === CircuitState.HALF_OPEN) {
             this._halfOpenSuccesses++;
             this.logger.info(`[CircuitBreaker] HALF_OPEN success ${this._halfOpenSuccesses}/${this.halfOpenMaxAttempts}`);
