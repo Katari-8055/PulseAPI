@@ -57,13 +57,6 @@ export class IngestService {
                 };
             }
 
-            logger.info('API hit ingested', {
-                eventId: event.eventId,
-                endpoint: event.endpoint,
-                method: event.method,
-                clientId: event.clientId,
-            });
-
             return {
                 eventId: event.eventId,
                 status: 'queued',

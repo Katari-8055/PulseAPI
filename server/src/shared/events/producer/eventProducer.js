@@ -79,15 +79,6 @@ export class EventProducer {
                 const latencyMs = Date.now() - startMs;
                 this._circuitBreaker.onSuccess();
                 this._incrementMetric('published');
-
-                this._logger.info('[EventProducer] published', {
-                    eventId: eventData.eventId,
-                    correlationId,
-                    attempt: attempt + 1,
-                    latencyMs,
-                    endpoint: eventData.endpoint,
-                });
-
                 return true;
             } catch (error) {
                 this._logger.error('[EventProducer] publish attempt failed', {
@@ -156,19 +147,15 @@ export class EventProducer {
             );
 
             if (!written) {
-                this._logger.info('[EventProducer] back-pressure detected, waiting for drain', {
+                this._logger.warn('[EventProducer] back-pressure detected, waiting for drain', {
                     eventId: eventData.eventId,
                 });
-            }
-
-            const onDrain = () => {
-                channel.removeListener('drain', onDrain);
-                this._logger.debug('[EventProducer] drain event received', {
-                    eventId: eventData.eventId,
+                channel.once("drain", () => {
+                    this._logger.debug('[EventProducer] drain event received', {
+                        eventId: eventData.eventId,
+                    });
                 });
             }
-
-            channel.once("drain", onDrain)
         })
     }
 
