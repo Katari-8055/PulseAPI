@@ -55,13 +55,13 @@ export class IngestService {
                     reason: 'service_unavailable',
                     timestamp: event.timestamp,
                 };
+            } else {
+                return {
+                    eventId: event.eventId,
+                    status: 'queued',
+                    timestamp: event.timestamp,
+                }
             }
-
-            return {
-                eventId: event.eventId,
-                status: 'queued',
-                timestamp: event.timestamp,
-            };
         } catch (error) {
             logger.error('Error ingesting API hit:', error);
             throw error;
