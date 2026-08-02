@@ -82,9 +82,9 @@ async function sendMonitoringData(data, options) {
         // Fail silently to not disrupt the main application
         if (options.enableLogging) {
             if (error.response) {
-                console.error('Failed to send monitoring data:', error.response.status, error.response.data?.message || error.response.statusText);
+                console.error('Failed to send monitoring data:', error.response.status, error.response.data?.message || JSON.stringify(error.response.data) || error.response.statusText);
             } else {
-                console.error('Failed to send monitoring data:', error.message);
+                console.error('Failed to send monitoring data:', error.message || error.code || error);
             }
         }
     }
