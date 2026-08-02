@@ -33,12 +33,14 @@ export function AuthProvider({ children }) {
         try {
             await authApi.logout();
         } catch (e) {}
+        localStorage.removeItem('authToken');
         queryClient.clear();
         setUser(null);
     }, [queryClient]);
 
     useEffect(() => {
         const handle401 = () => {
+            localStorage.removeItem('authToken');
             queryClient.clear();
             setUser(null);
         };

@@ -16,7 +16,7 @@ export default function DocsPreview() {
 const monitoringMiddleware = (options = {}) => {
     const {
         apiKey = process.env.MONITORING_API_KEY,
-        endpoint = process.env.MONITORING_ENDPOINT || 'http://localhost:5000/api/hit',
+        endpoint = process.env.MONITORING_ENDPOINT || 'http://20.235.241.206:5000/api/hit',
         serviceName = process.env.SERVICE_NAME || 'my-service'
     } = options;
 
@@ -91,7 +91,7 @@ PORT=3002
 
 # PulseAPI telemetry keys
 MONITORING_API_KEY=pl_live_9a8f2c3d4e5f6g7h8i9j
-MONITORING_ENDPOINT=http://localhost:5000/api/hit
+MONITORING_ENDPOINT=http://20.235.241.206:5000/api/hit
 SERVICE_NAME=blog-api`
         },
         payload: {

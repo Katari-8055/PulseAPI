@@ -17,7 +17,10 @@ function Login() {
         mutationFn: authApi.login,
         onSuccess: (data) => {
             if (data.success) {
-                // We reload the page or update auth state so the AuthGate re-fetches the profile.
+                const token = data.data?.token || data.token;
+                if (token) {
+                    localStorage.setItem('authToken', token);
+                }
                 window.location.href = '/';
             } else {
                 setError(data.message || 'Login failed');
@@ -32,7 +35,10 @@ function Login() {
         mutationFn: clientApi.clientLogin,
         onSuccess: (data) => {
             if (data.success) {
-                // The backend sets authToken cookie. Reload to load client profile.
+                const token = data.data?.token || data.token;
+                if (token) {
+                    localStorage.setItem('authToken', token);
+                }
                 window.location.href = '/';
             } else {
                 setError(data.message || 'Login failed');

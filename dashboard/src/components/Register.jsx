@@ -16,8 +16,10 @@ function Register() {
         mutationFn: clientApi.clientRegister,
         onSuccess: (data) => {
             if (data.success) {
-                // The backend sets the authToken cookie upon successful registration.
-                // We reload to the root where the AuthContext will automatically fetch the profile.
+                const token = data.data?.token || data.token;
+                if (token) {
+                    localStorage.setItem('authToken', token);
+                }
                 window.location.href = '/';
             } else {
                 setError(data.message || 'Registration failed');
