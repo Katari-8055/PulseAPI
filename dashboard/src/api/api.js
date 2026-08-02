@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta?.env?.VITE_API_BASE_URL ?? '/api';
+const API_BASE_URL = (import.meta?.env?.VITE_API_BASE_URL ?? 'http://20.235.241.206:5000/api').replace(/\/$/, '');
 
 const api = axios.create({
     baseURL: API_BASE_URL,
@@ -9,11 +9,23 @@ const api = axios.create({
     },
     withCredentials: true,
 });
+api.interceptors.request.use(
+    (config) => {
+        const token = localStorage.getItem('authToken');
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+    },
+    (error) => Promise.reject(error)
+);
+
 api.interceptors.response.use(
     (response) => response,
     (error) => {
         const isAuthRoute = error.config?.url?.includes('/auth/');
         if (error.response?.status === 401 && !isAuthRoute) {
+            localStorage.removeItem('authToken');
             window.dispatchEvent(new Event('auth:unauthorized'));
         }
         return Promise.reject(error);
