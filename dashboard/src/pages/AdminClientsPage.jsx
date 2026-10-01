@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { clientApi } from '../api/api';
 import { useAuth } from '../contexts/AuthContext';
-import { Users, Building2, KeyRound, ChevronRight, Loader2 } from 'lucide-react';
+import { Users, Building2, KeyRound, ChevronRight, Loader2, Eye } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { cn } from '../lib/utils';
 
@@ -60,11 +60,12 @@ export function AdminClientsPage() {
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-4 gap-4">
                 {[
                     { label: 'Total Clients', value: clients.length, icon: Building2 },
                     { label: 'Active', value: clients.filter(c => c.isActive).length, icon: Users },
                     { label: 'Total Keys', value: clients.reduce((sum, c) => sum + (c.keysCount || 0), 0), icon: KeyRound },
+                    { label: 'Unique Visitors', value: clients.reduce((sum, c) => sum + (c.uniqueUsersCount || 0), 0), icon: Eye },
                 ].map((s) => {
                     const Icon = s.icon;
                     return (

@@ -26,13 +26,24 @@ function Register() {
             }
         },
         onError: (err) => {
-            setError(err.response?.data?.message || 'Failed to connect to server');
+            const msg =
+                err.response?.data?.error ||
+                err.response?.data?.message ||
+                err.message ||
+                'Failed to connect to server';
+            setError(msg);
         },
     });
 
     const handleSubmit = (e) => {
         e.preventDefault();
         setError('');
+
+        if (password.length < 8) {
+            setError('Password must be at least 8 characters long.');
+            return;
+        }
+
         registerMutation.mutate({
             name,
             email,
@@ -121,7 +132,7 @@ function Register() {
                                     required
                                     disabled={registerMutation.isPending}
                                     className="w-full pl-10 pr-4 py-2 bg-slate-950/50 border border-slate-800 rounded-lg focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 outline-none transition-all text-slate-100 placeholder:text-slate-600 disabled:opacity-50"
-                                    placeholder="Minimum 6 characters"
+                                    placeholder="Min. 8 characters"
                                 />
                             </div>
                         </div>

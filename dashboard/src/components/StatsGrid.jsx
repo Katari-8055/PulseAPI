@@ -1,5 +1,5 @@
 import { Card, CardContent } from './ui';
-import { TrendingUp, Clock, AlertTriangle, CheckCircle2, Layers, Zap } from 'lucide-react';
+import { TrendingUp, Clock, AlertTriangle, CheckCircle2, Layers, Zap, Users } from 'lucide-react';
 import styles from '../styles/modules/StatsGrid.module.scss';
 
 function getTimeframeSubtitle(stats) {
@@ -80,6 +80,16 @@ function StatsGrid({ stats }) {
             bgClass: styles.bgYellow,
             textClass: styles.textYellow,
             progressClass: styles.progressYellow,
+        },
+        {
+            title: 'Unique Users',
+            value: stats.uniqueUsers ?? 0,
+            subtitle: 'Distinct visitors',
+            icon: Users,
+            gradientClass: styles.gradientCyan,
+            bgClass: styles.bgCyan,
+            textClass: styles.textCyan,
+            progressClass: styles.progressCyan,
         },
     ];
 

@@ -32,6 +32,10 @@ const monitoringMiddleware = (options = {}) => {
             const endTime = Date.now();
             const responseTime = endTime - startTime;
 
+            const userId = typeof options.getUserId === 'function'
+                ? options.getUserId(req)
+                : (req.user?.id || req.user?._id || req.userId || req.headers['x-user-id'] || null);
+
             // Prepare monitoring data
             const monitoringData = {
                 serviceName: serviceName,
@@ -40,7 +44,8 @@ const monitoringMiddleware = (options = {}) => {
                 statusCode: res.statusCode,
                 latencyMs: responseTime,
                 ip: req.ip || req.connection?.remoteAddress || 'unknown',
-                userAgent: req.get('User-Agent') || 'unknown'
+                userAgent: req.get('User-Agent') || 'unknown',
+                ...(userId ? { userId: String(userId) } : {})
             };
 
             // Send monitoring data asynchronously (don't block response)

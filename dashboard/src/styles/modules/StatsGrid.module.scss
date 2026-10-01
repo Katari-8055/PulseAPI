@@ -206,3 +206,22 @@
 .progressYellow {
     background: linear-gradient(to right, #eab308, #f97316);
 }
+
+// Cyan theme — Unique Users card
+.gradientCyan {
+    --tw-gradient-from: #06b6d4;
+    --tw-gradient-to: #0ea5e9;
+    --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+}
+
+.bgCyan {
+    background-color: rgba(6, 182, 212, 0.1);
+}
+
+.textCyan {
+    color: rgb(6, 182, 212);
+}
+
+.progressCyan {
+    background: linear-gradient(to right, #06b6d4, #0ea5e9);
+}
