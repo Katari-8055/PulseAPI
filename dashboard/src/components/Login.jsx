@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { authApi, clientApi } from '../api/api';
-import { Activity, Lock, User, Mail, Loader2, Building } from 'lucide-react';
+import { Activity, Lock, User, Mail, Loader2, Building, Sparkles } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 function Login() {
     const [loginType, setLoginType] = useState('user'); // 'user' | 'client'
@@ -11,7 +11,8 @@ function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
-    const { login } = useAuth();
+    const { login, enterDemoMode } = useAuth();
+    const navigate = useNavigate();
 
     const userLoginMutation = useMutation({
         mutationFn: authApi.login,
@@ -180,7 +181,7 @@ function Login() {
 
                         <button
                             type="submit"
-                            className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer shadow-md shadow-indigo-600/20"
                             disabled={isPending}
                         >
                             {isPending ? (
@@ -191,6 +192,24 @@ function Login() {
                             ) : (
                                 'Sign In'
                             )}
+                        </button>
+
+                        <div className="relative flex items-center justify-center my-4">
+                            <div className="border-t border-slate-800 w-full" />
+                            <span className="bg-slate-900 px-3 text-xs text-slate-500 uppercase tracking-wider">or</span>
+                            <div className="border-t border-slate-800 w-full" />
+                        </div>
+
+                        <button
+                            type="button"
+                            onClick={() => {
+                                enterDemoMode();
+                                navigate('/');
+                            }}
+                            className="w-full py-2.5 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white rounded-lg font-medium transition-all flex items-center justify-center gap-2 shadow-lg shadow-indigo-500/25 border border-indigo-400/30 cursor-pointer"
+                        >
+                            <Sparkles className="w-4 h-4 text-amber-300 animate-pulse" />
+                            Instant Live Demo (Recruiter Access)
                         </button>
                     </form>
 

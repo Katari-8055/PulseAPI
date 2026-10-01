@@ -1,12 +1,20 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { Zap, Menu, X, Github, Sun, Moon } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Zap, Menu, X, Github, Sun, Moon, Sparkles } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useAuth } from '../../contexts/AuthContext';
 
 export default function Navbar() {
     const [isOpen, setIsOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
     const { currentTheme, switchTheme } = useTheme();
+    const { enterDemoMode } = useAuth();
+    const navigate = useNavigate();
+
+    const handleDemoClick = () => {
+        enterDemoMode();
+        navigate('/');
+    };
 
     useEffect(() => {
         const handleScroll = () => {
@@ -74,12 +82,12 @@ export default function Navbar() {
                     </div>
 
                     {/* Action buttons */}
-                    <div className="hidden md:flex items-center gap-4">
+                    <div className="hidden md:flex items-center gap-3">
                         <a
                             href="https://github.com/Katari-8055/PulseAPI"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-muted-foreground hover:text-foreground transition-colors"
+                            className="text-muted-foreground hover:text-foreground transition-colors mr-1"
                         >
                             <Github className="w-5 h-5" />
                         </a>
@@ -90,6 +98,14 @@ export default function Navbar() {
                             title={`Switch to ${currentTheme === 'dark' ? 'Light' : 'Dark'} theme`}
                         >
                             {currentTheme === 'dark' ? <Sun className="w-4.5 h-4.5" /> : <Moon className="w-4.5 h-4.5" />}
+                        </button>
+
+                        <button
+                            onClick={handleDemoClick}
+                            className="inline-flex items-center gap-1.5 text-xs font-semibold text-white bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 px-3.5 py-2 rounded-lg shadow-md shadow-indigo-500/25 border border-indigo-400/30 transition-all hover:scale-105 cursor-pointer"
+                        >
+                            <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-pulse" />
+                            <span>Live Demo</span>
                         </button>
 
                         <Link
@@ -108,6 +124,13 @@ export default function Navbar() {
 
                     {/* Mobile menu button */}
                     <div className="md:hidden flex items-center gap-3">
+                        <button
+                            onClick={handleDemoClick}
+                            className="inline-flex items-center gap-1 text-xs font-semibold text-white bg-indigo-600 px-2.5 py-1.5 rounded-lg shadow-sm"
+                        >
+                            <Sparkles className="w-3 h-3 text-amber-300" />
+                            <span>Demo</span>
+                        </button>
                         <button
                             onClick={() => switchTheme(currentTheme === 'dark' ? 'light' : 'dark')}
                             className="p-2 rounded-lg hover:bg-muted/50 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
@@ -153,9 +176,18 @@ export default function Navbar() {
                             About
                         </button>
                         <hr className="border-border/40 my-2" />
+                        <div className="p-2">
+                            <button
+                                onClick={handleDemoClick}
+                                className="w-full text-center text-sm font-semibold text-white bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 py-2.5 rounded-lg shadow-md transition-all flex items-center justify-center gap-2 mb-2"
+                            >
+                                <Sparkles className="w-4 h-4 text-amber-300" />
+                                Live Demo (No Credentials Needed)
+                            </button>
+                        </div>
                         <div className="flex items-center gap-4 px-3 py-2">
                             <a
-                                href="https://github.com"
+                                href="https://github.com/Katari-8055/PulseAPI"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2 text-sm font-medium"

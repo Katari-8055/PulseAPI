@@ -23,6 +23,25 @@ export function DashboardLayout({ children, onLogout }) {
 
             {/* Main Content */}
             <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+                {user?.isDemo && (
+                    <div className="bg-gradient-to-r from-blue-950 via-indigo-950 to-purple-950 border-b border-indigo-500/30 px-4 py-2 flex items-center justify-between text-xs backdrop-blur-md flex-shrink-0 z-20">
+                        <div className="flex items-center gap-2 text-indigo-200">
+                            <span className="relative flex h-2 w-2">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                            </span>
+                            <span className="font-semibold text-white">Live Recruiter Demo</span>
+                            <span className="hidden sm:inline text-slate-300">— Showing high-throughput simulated API metrics without credentials.</span>
+                        </div>
+                        <button
+                            onClick={onLogout}
+                            className="px-3 py-1 rounded-md bg-indigo-600/40 hover:bg-indigo-600/70 text-white border border-indigo-400/30 font-medium transition-all text-xs cursor-pointer shadow-sm"
+                        >
+                            Exit Demo
+                        </button>
+                    </div>
+                )}
+
                 {/* Top Header */}
                 <header className="flex items-center justify-between px-4 lg:px-6 h-14 border-b border-border/45 bg-background/80 backdrop-blur-sm flex-shrink-0">
                     <div className="flex items-center gap-3">
